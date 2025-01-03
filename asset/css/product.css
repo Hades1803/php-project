@@ -1,0 +1,100 @@
+.product-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: "Sofia", cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 40px;
+
+}
+.product-list {
+    display: flex; 
+    flex-wrap: wrap;
+    justify-content: space-between; 
+    gap: 20px; 
+    padding: 0 10px; 
+}
+
+.product-item {
+    max-width: calc(25% - 20px);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.product-list:last-child {
+    justify-content: left; 
+}
+.product-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-img img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+.product-name h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 15px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px 10px;
+}
+
+.price {
+    font-size: 16px;
+    color: #1b1717;
+    font-weight: bold;
+    margin-bottom: 15px;
+
+}
+.price .sale-price{
+    color: #e74c3c;
+    font-size: 20px;
+}
+.button-action {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background: #f9f9f9;
+}
+
+.button-action button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.button-action .view-more {
+    background-color: #3498db;
+    color: white;
+}
+.view-more a{
+    text-decoration: none;
+    color: white;
+}
+.button-action .view-more:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.button-action .add-to-cart {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.button-action .add-to-cart:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+}
