@@ -67,13 +67,29 @@
                         <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
                             data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                <a class="nav-link " href="<?=BASE_ADMIN_URL ?>page=categories">
-                                    Quan ly danh muc
+                                <!-- Quản lý danh mục -->
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#categoriesMenu" aria-expanded="false"
+                                    aria-controls="categoriesMenu">
+                                    Quản lý danh mục
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                 </a>
-                                <a class="nav-link " href="<?=BASE_ADMIN_URL ?>page=products">
-                                    Quan ly san pham
+                                <div class="collapse" id="categoriesMenu" aria-labelledby="headingTwo"
+                                    data-bs-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=categories">Danh sách danh
+                                            mục</a>
+                                        <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=category-trash">Thùng rác
+                                            danh mục</a>
+                                    </nav>
+                                </div>
+
+                                <!-- Quản lý sản phẩm -->
+                                <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=products">
+                                    Quản lý sản phẩm
                                 </a>
                             </nav>
+
                         </div>
                     </div>
                 </div>

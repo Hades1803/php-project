@@ -1,9 +1,9 @@
 <?php
 class Upload
 {
-    function doUpload($files)
+    function doUpload($files,$uploadDirectory)
     {
-        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/NguyenAnhQuoc/asset/avatar/";
+        $target_dir = $_SERVER['DOCUMENT_ROOT'] . $uploadDirectory;
         $imageFileType = strtolower(pathinfo($files["name"], PATHINFO_EXTENSION));
         $target_file = $target_dir . basename($files["name"]); // Giữ nguyên tên file
         $uploadOk = 1;

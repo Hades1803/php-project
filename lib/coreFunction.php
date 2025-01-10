@@ -85,5 +85,13 @@ class CoreFunction extends Database
         $this->setQuery($sql);
     }
 
+    function trashRecord($table,$id){
+        $sql = "UPDATE $table SET trash = 1 WHERE id = $id";
+        $this->setQuery($sql);
+    }
+    function restoreRecord($table,$id){
+        $sql = "UPDATE $table SET trash = 0 WHERE id = $id";
+        $this->setQuery($sql);
+    }
 }
 ?>

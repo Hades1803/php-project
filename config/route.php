@@ -19,5 +19,6 @@
         ''=> 'home.php',
         'categories' => 'category/index.php',
         'products' => 'product/index.php',
+        'category-trash'=>'category/category-trash.php'
     ];    
 ?>

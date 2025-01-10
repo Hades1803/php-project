@@ -1,6 +1,6 @@
 <?php
 // Lấy danh sách danh mục
-$sql = "SELECT * FROM category";
+$sql = "SELECT * FROM category WHERE trash = 0";
 $result = $f->getAll($sql);
 ?>
 
@@ -16,6 +16,7 @@ $result = $f->getAll($sql);
                     <tr>
                         <th>ID</th>
                         <th>Tên danh mục</th>
+                        <th>Trạng thái</th>
                         <th>Sửa</th>
                         <th>Xóa</th>
                     </tr>
@@ -25,10 +26,11 @@ $result = $f->getAll($sql);
                         <tr>
                             <td><?= $value['id'] ?></td>
                             <td><?= $value['category_name'] ?></td>
+                            <td><?= $value['status'] == 1 ? 'Hiện' : 'Ẩn' ?></td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal"
                                     data-bs-target="#editCategoryModal"
-                                    onclick="editCategory(<?= $value['id'] ?>, '<?= $value['category_name'] ?>', '<?= $value['slug'] ?>', <?= $value['parent'] ?>)">
+                                    onclick="editCategory(<?= $value['id'] ?>, '<?= $value['category_name'] ?>', '<?= $value['slug'] ?>', <?= $value['parent'] ?>, <?= $value['status'] ?>)">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </td>
@@ -38,11 +40,10 @@ $result = $f->getAll($sql);
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>
-
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -121,12 +122,22 @@ $result = $f->getAll($sql);
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Trạng thái</label>
+                        <select class="form-select" id="editStatus" name="status" required>
+                            <option value="1">Hiện</option>
+                            <option value="0">Ẩn</option>
+                        </select>
+                    </div>
+
+
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Modal Xác nhận xóa -->
 <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel"
@@ -177,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['id'])) {
         // Thêm danh mục
         $categoryData = [
             'category_name' => $categoryName,
-            'slug' => generateSlug($slug),
+            'slug' => $slug,
             'parent' => $parentCategoryId
         ];
         $f->addRecord("category", $categoryData);
@@ -218,53 +229,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $categoryName = $_POST['category_name'];
     $slug = $_POST['slug'];
     $parentCategoryId = $_POST['parent_category_id'];
+    $status = $_POST['status'];
 
-    // Kiểm tra tên và slug
-    $checkName = $f->checkExist("category", "category_name", $categoryName);
-    $checkSlug = $f->checkExist("category", "slug", $slug);
+    // Lấy thông tin danh mục hiện tại từ cơ sở dữ liệu
+    $sql = "SELECT * FROM category WHERE id = $id";
+    $currentCategory = $f->getOne($sql);
 
-    if ($checkName !== 1 || $checkSlug !== 1) {
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-        echo "
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Lỗi!',
-                    text: 'Tên hoặc slug đã tồn tại.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+    // Kiểm tra xem tên hoặc slug có thay đổi không
+    $isNameChanged = $categoryName !== $currentCategory['category_name'];
+    $isSlugChanged = $slug !== $currentCategory['slug'];
+
+    if ($isNameChanged || $isSlugChanged) {
+        // Nếu tên hoặc slug thay đổi, kiểm tra trùng lặp
+        $checkName = $f->checkExist("category", "category_name", $categoryName);
+        $checkSlug = $f->checkExist("category", "slug", $slug);
+
+        if ($checkName !== 1 || $checkSlug !== 1) {
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+            echo "
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Tên hoặc slug đã tồn tại.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 });
-            });
-        </script>
-        ";
-    } else {
-        // Cập nhật danh mục
-        $categoryData = [
-            'category_name' => $categoryName,
-            'slug' => $slug,
-            'parent' => $parentCategoryId
-        ];
-        $f->editRecord("category", $id, $categoryData);
-
-        // Thông báo thành công
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-        echo "
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Danh mục đã được cập nhật thành công!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '" . $_SERVER['REQUEST_URI'] . "';
-                    }
-                });
-            });
-        </script>
-        ";
+            </script>
+            ";
+            return; 
+        }
     }
+
+    // Cập nhật danh mục
+    $categoryData = [
+        'category_name' => $categoryName,
+        'slug' => $slug,
+        'parent' => $parentCategoryId,
+        'status' => $status
+    ];
+    $f->editRecord("category", $id, $categoryData);
+
+    // Thông báo thành công
+    echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+    echo "
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Danh mục đã được cập nhật thành công!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '" . $_SERVER['REQUEST_URI'] . "';
+                }
+            });
+        });
+    </script>
+    ";
 }
 
 
@@ -300,22 +324,22 @@ if (isset($_GET['id'])) {
             </script>
         ";
     } else {
-        // Nếu không có sản phẩm, tiến hành xóa danh mục
-        $f->deleteRecord("category", $id);
+        // Thay vì xóa, di chuyển vào trash
+        $f->trashRecord("category", $id);
 
-        // Thông báo thành công và tải lại trang
+        // Thông báo thành công và chuyển hướng sang trang category-trash.php
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
         echo "
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         title: 'Thành công!',
-                        text: 'Danh mục đã được xóa thành công!',
+                        text: 'Danh mục đã được di chuyển vào thùng rác!',
                         icon: 'success',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                           window.location.href = 'http://localhost/NguyenAnhQuoc/admin/index.php?page=categories'; 
+                           window.location.href = 'http://localhost/NguyenAnhQuoc/admin/index.php?page=category-trash'; 
                         }
                     });
                 });
@@ -324,18 +348,21 @@ if (isset($_GET['id'])) {
     }
 }
 
+
 ?>
 
 
 
 
 <script>
-    function editCategory(id, name, slug, parentId) {
+    function editCategory(id, name, slug, parentId, status) {
         document.getElementById('editCategoryId').value = id;
         document.getElementById('editCategoryName').value = name;
         document.getElementById('editSlug').value = slug;
         document.getElementById('editParentCategory').value = parentId;
+        document.getElementById('editStatus').value = status; // Đặt giá trị trạng thái
     }
+
 </script>
 
 <script>

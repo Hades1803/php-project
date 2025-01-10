@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($image['size'] != 0) {
         $a['avatar'] = $image['name'];
         $u = new Upload;
-        $u->doUpload($image);
+        $u->doUpload($image,"/NguyenAnhQuoc/asset/avatar/");
     }
 
     // Xử lý mật khẩu nếu có thay đổi
