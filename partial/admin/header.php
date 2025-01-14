@@ -88,6 +88,10 @@
                                 <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=products">
                                     Quản lý sản phẩm
                                 </a>
+                                <!-- Quản lý người dùng -->
+                                <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=users">
+                                    Quản lý người dùng
+                                </a>
                             </nav>
 
                         </div>

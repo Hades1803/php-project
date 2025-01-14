@@ -1,7 +1,40 @@
 <?php
 // Lấy danh sách sản phẩm
+require('../lib/paginator.php');
+$p = new Paginator();
+if (!isset($_GET['currentPage'])) {
+    $page = 1;
+} else {
+    $page = $_GET['currentPage'];
+}
+$limit = 10;
+
+
 $sql = "SELECT p.*, c.category_name FROM product p LEFT JOIN category c ON p.cat_id = c.id";
+$result_all = $f->getAll($sql);
+
+
+$config = array(
+    'base_url' => BASE_ADMIN_URL . "page=products",
+    'total_rows' => count($result_all),
+    'per_page' => $limit,
+    'cur_page' => $page,
+);
+
+$p->init($config);
+
+$sql = "
+    SELECT product.*, category_name AS category_name 
+    FROM product
+    LEFT JOIN category ON product.cat_id = category.id
+    WHERE product.trash = 0
+    ORDER BY product.id ASC
+    LIMIT " . ($page - 1) * $limit . ", " . $limit;
+// echo $sql;
 $result = $f->getAll($sql);
+    // print_r($result);
+
+
 $sqlCat = "SELECT * FROM category";
 $resultCat = $f->getAll($sqlCat);
 ?>
@@ -33,8 +66,8 @@ $resultCat = $f->getAll($sqlCat);
                             <td><?= $value['category_name'] ?></td>
                             <td><?= number_format($value['price'], 0, ',', '.') ?> VND</td>
                             <td><?= number_format($value['sale_price'], 0, ',', '.') ?> VND</td>
-                            <td><img src="<?= $value['image'] ?>" alt="Product Image" width="50"></td>
-                            <!-- <td><img src="/NguyenAnhQuoc/asset/avatar/<?= $value['image'] ?>" alt="Product Image" width="50"></td> -->
+                            <!-- <td><img src="<?= $value['image'] ?>" alt="Product Image" width="50"></td> -->
+                            <td><img src="/NguyenAnhQuoc/asset/avatar/<?= $value['image'] ?>" alt="Product Image" width="50"></td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal"
                                     data-bs-target="#editProductModal"
@@ -52,6 +85,9 @@ $resultCat = $f->getAll($sqlCat);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <div class="pagination d-flex justify-content-center">
+                <?= $p->createLinks(); ?>
+            </div>
 
         </div>
     </div>
@@ -145,8 +181,9 @@ $resultCat = $f->getAll($sqlCat);
 
                     <div class="mb-3">
                         <label for="editProductImage" class="form-label">Hình ảnh</label>
-                        <input type="hidden" name="old_image" id="old_image" value=""> 
-                        <img src="" alt="Product Image" id="editProductImagePreview" width="50"> <!-- Preview hình ảnh -->
+                        <input type="hidden" name="old_image" id="old_image" value="">
+                        <img src="" alt="Product Image" id="editProductImagePreview" width="50">
+                        <!-- Preview hình ảnh -->
                         <input type="file" class="form-control" id="editProductImage" name="image" accept="image/*">
                     </div>
 
@@ -219,8 +256,8 @@ $upload = new Upload();
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['id'])) {
     $productName = $_POST['product_name'];
     $slug = $_POST['slug'];
-    $catId = $_POST['category_id']; 
-    $image = $_FILES['image']; 
+    $catId = $_POST['category_id'];
+    $image = $_FILES['image'];
     $price = $_POST['price'];
     $description = $_POST['desc'];
     $metadesc = $_POST['metadesc'];
@@ -243,7 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['id'])) {
         </script>
         ";
     } else {
-        $upload->doUpload($image,"NguyenAnhQuoc/asset/images");  // Chuyển file hình ảnh vào hàm doUpload
+        $upload->doUpload($image, "NguyenAnhQuoc/asset/images");  // Chuyển file hình ảnh vào hàm doUpload
 
         // Nếu upload thành công, tiếp tục thêm sản phẩm
         $productData = [

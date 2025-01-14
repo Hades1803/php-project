@@ -93,5 +93,11 @@ class CoreFunction extends Database
         $sql = "UPDATE $table SET trash = 0 WHERE id = $id";
         $this->setQuery($sql);
     }
+    function getCount($table) {
+        $sql = "SELECT COUNT(*) as count FROM $table";
+        $result = $this->getAll($sql);
+        return $result[0]['count'];
+    }
+    
 }
 ?>
