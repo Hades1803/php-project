@@ -14,7 +14,7 @@
     <?php foreach ($result as $product): ?>
     <div class="product-item">
         <div class="product-img">
-            <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>">
+            <img src="/NguyenAnhQuoc/asset/images/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>">
         </div>
         <div class="product-name">
             <h3><?= htmlspecialchars($product['product_name']) ?></h3>

@@ -67,7 +67,7 @@ $resultCat = $f->getAll($sqlCat);
                             <td><?= number_format($value['price'], 0, ',', '.') ?> VND</td>
                             <td><?= number_format($value['sale_price'], 0, ',', '.') ?> VND</td>
                             <!-- <td><img src="<?= $value['image'] ?>" alt="Product Image" width="50"></td> -->
-                            <td><img src="/NguyenAnhQuoc/asset/avatar/<?= $value['image'] ?>" alt="Product Image" width="50"></td>
+                            <td><img src="/NguyenAnhQuoc/asset/images/<?= $value['image'] ?>" alt="Product Image" width="50"></td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal"
                                     data-bs-target="#editProductModal"
@@ -280,39 +280,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['id'])) {
         </script>
         ";
     } else {
-        $upload->doUpload($image, "NguyenAnhQuoc/asset/images");  // Chuyển file hình ảnh vào hàm doUpload
+        // Upload ảnh
+        $uploadResult = $upload->doUpload($image, "NguyenAnhQuoc/asset/images");
 
-        // Nếu upload thành công, tiếp tục thêm sản phẩm
-        $productData = [
-            'product_name' => $productName,
-            'slug' => $slug,
-            'cat_id' => $catId,
-            'image' => $image['name'],  // Lưu tên file hình ảnh
-            'price' => $price,
-            'description' => $description,
-            'metadesc' => $metadesc,
-            'sale_price' => $sale_price
-        ];
+        if ($uploadResult['status'] === 'success') {
+            // Nếu upload thành công, tiếp tục thêm sản phẩm
+            $productData = [
+                'product_name' => $productName,
+                'slug' => $slug,
+                'cat_id' => $catId,
+                'image' => $uploadResult['file_name'],  // Lưu tên file hình ảnh
+                'price' => $price,
+                'description' => $description,
+                'metadesc' => $metadesc,
+                'sale_price' => $sale_price
+            ];
 
-        $f->addRecord("product", $productData);
+            $f->addRecord("product", $productData);
 
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-        echo "
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Sản phẩm đã được thêm thành công!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '" . $_SERVER['REQUEST_URI'] . "'; 
-                    }
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+            echo "
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Sản phẩm đã được thêm thành công!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '" . $_SERVER['REQUEST_URI'] . "'; 
+                        }
+                    });
                 });
-            });
-        </script>
-        ";
+            </script>
+            ";
+        } else {
+            // Nếu upload thất bại, hiển thị thông báo lỗi
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+            echo "
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: '" . $uploadResult['message'] . "',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            </script>
+            ";
+        }
     }
 }
 
@@ -323,11 +341,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $catId = $_POST['category_id'];
     $price = $_POST['price'];
     $salePrice = $_POST['sale_price'];
-    $image = $_FILES['image']['name'] ? $_FILES['image']['name'] : $_POST['old_image']; // Nếu có thay đổi hình ảnh
+    $oldImage = $_POST['old_image'];
+    $newImage = $_FILES['image']['name'] ? $_FILES['image'] : null;
 
-    // Xử lý upload ảnh
-    if ($image && $image != $_POST['old_image']) {
-        move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/' . $image);
+    // Xử lý upload ảnh nếu có ảnh mới
+    if ($newImage && $newImage['name'] !== $oldImage) {
+        $uploadResult = $upload->doUpload($newImage, "NguyenAnhQuoc/asset/images");
+
+        if ($uploadResult['status'] === 'success') {
+            $image = $uploadResult['file_name'];  // Lưu tên file hình ảnh mới
+        } else {
+            // Nếu upload thất bại, hiển thị thông báo lỗi
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+            echo "
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: '" . $uploadResult['message'] . "',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            </script>
+            ";
+            exit;
+        }
+    } else {
+        $image = $oldImage;  // Giữ nguyên ảnh cũ
     }
 
     // Cập nhật sản phẩm

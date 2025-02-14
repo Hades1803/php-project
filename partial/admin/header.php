@@ -92,6 +92,10 @@
                                 <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=users">
                                     Quản lý người dùng
                                 </a>
+                                <!-- Quản lý đơn hàng -->
+                                <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=orders">
+                                    Quản lý đơn hàng
+                                </a>
                             </nav>
 
                         </div>
