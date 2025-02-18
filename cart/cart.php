@@ -1,7 +1,5 @@
 <?php
 
-
-
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['user'])) {
     echo '<div class="alert alert-warning text-center">Đăng nhập để xem giỏ hàng</div>';
@@ -44,7 +42,8 @@ $result = $s->getAll($sql);
                     ?>
                     <tr data-product-id="<?= $c['id'] ?>">
                         <td class="img-thumbnail" style="width: 100px; height: 100px;">
-                            <img src="<?= $c['image'] ?>" alt="Product Image" class="img-fluid rounded">
+                            <img src="/NguyenAnhQuoc/asset/images/<?= $c['image'] ?>" alt="Product Image"
+                                class="img-fluid rounded">
                         </td>
                         <td><?= htmlspecialchars($c['product_name']) ?></td>
                         <td><?= number_format($c['price'], 0, ',', '.') ?>₫</td>
@@ -71,37 +70,120 @@ $result = $s->getAll($sql);
             </tfoot>
         </table>
         <a href="<?= BASE_URL ?>page=confirm" class="btn btn-success">Đặt hàng</a>
+        <button id="clear-cart" class="btn btn-danger">Xóa toàn bộ giỏ hàng</button>
     </div>
 </div>
 
 <!-- jQuery để xử lý cập nhật và xóa sản phẩm -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function () {
-    $(".quantity").on("change", function () {
-        let qty = parseInt($(this).val());
-        if (qty < 1) {
-            qty = 1;
-            $(this).val(1);
-        }
-
-        let productId = $(this).closest("tr").data("product-id"); 
-        let price = $(this).data("price");
-        let subtotal = qty * price;
-        $(this).closest("tr").find(".subtotal").text(subtotal.toLocaleString('vi-VN') + "₫");
-
-        updateTotal();
-
-        // Gửi số lượng mới lên server để cập nhật session
-        $.ajax({
-            url: "<?= BASE_URL?>page=update",
-            type: "POST",
-            data: { product_id: productId, quantity: qty },
-            success: function (response) {
-                console.log(response);
+        $(".quantity").on("change", function () {
+            let qty = parseInt($(this).val());
+            if (qty < 1) {
+                qty = 1;
+                $(this).val(1);
             }
+
+            let productId = $(this).closest("tr").data("product-id");
+            let price = $(this).data("price");
+            let subtotal = qty * price;
+            $(this).closest("tr").find(".subtotal").text(subtotal.toLocaleString('vi-VN') + "₫");
+
+            updateTotal();
+
+            // Gửi số lượng mới lên server để cập nhật session
+            $.ajax({
+                url: "<?= BASE_URL ?>page=update",
+                type: "POST",
+                data: { product_id: productId, quantity: qty },
+                success: function (response) {
+                    console.log(response);
+                }
+            });
         });
-    });
+
+        // Xóa từng sản phẩm
+        $(".remove-item").on("click", function () {
+            let productId = $(this).data("id");
+
+            // Sử dụng SweetAlert thay vì confirm
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Sản phẩm này sẽ bị xóa khỏi giỏ hàng.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?= BASE_URL ?>page=removeItem",
+                        type: "POST",
+                        data: { product_id: productId },
+                        success: function (response) {
+                            let res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire(
+                                    'Đã xóa!',
+                                    'Sản phẩm đã được xóa khỏi giỏ hàng.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.href = 'http://localhost/NguyenAnhQuoc/index.php?page=cart'; 
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Lỗi!',
+                                    res.message,
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Xóa toàn bộ giỏ hàng
+        $("#clear-cart").on("click", function () {
+            // Sử dụng SweetAlert thay vì confirm
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Toàn bộ giỏ hàng sẽ bị xóa.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có, xóa tất cả!',
+                cancelButtonText: 'Hủy',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?= BASE_URL ?>page=clearCart",
+                        type: "POST",
+                        success: function (response) {
+                            let res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire(
+                                    'Đã xóa!',
+                                    'Giỏ hàng của bạn đã được xóa.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.href = 'http://localhost/NguyenAnhQuoc/index.php?page=cart'; // Reload trang
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Lỗi!',
+                                    res.message,
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            });
+        });
 
 
         // Hàm cập nhật tổng tiền giỏ hàng

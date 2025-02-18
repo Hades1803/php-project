@@ -10,7 +10,9 @@ if (!isset($_GET['currentPage'])) {
 $limit = 10;
 
 
-$sql = "SELECT p.*, c.category_name FROM product p LEFT JOIN category c ON p.cat_id = c.id";
+$sql = "SELECT p.*, c.category_name 
+        FROM product p 
+        LEFT JOIN category c ON p.cat_id = c.id ";
 $result_all = $f->getAll($sql);
 
 
@@ -28,7 +30,7 @@ $sql = "
     FROM product
     LEFT JOIN category ON product.cat_id = category.id
     WHERE product.trash = 0
-    ORDER BY product.id ASC
+    ORDER BY product.id DESC
     LIMIT " . ($page - 1) * $limit . ", " . $limit;
 // echo $sql;
 $result = $f->getAll($sql);
@@ -231,11 +233,11 @@ $resultCat = $f->getAll($sqlCat);
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteProductModalLabel">Xác nhận xóa sản phẩm</h5>
+                <h5 class="modal-title" id="deleteProductModalLabel">Xác nhận xóa tạm sản phẩm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Bạn có chắc chắn muốn xóa sản phẩm này không?
+                Bạn có chắc chắn muốn xóa tạm sản phẩm này không?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -407,8 +409,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Tiến hành xóa sản phẩm
-    $f->deleteRecord("product", $id);
+    // Thay vì xóa, cập nhật cột trash thành 1
+    $f->editRecord("product", $id, ['trash' => 1]);
 
     // Thông báo thành công và tải lại trang
     echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
@@ -417,7 +419,7 @@ if (isset($_GET['id'])) {
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: 'Thành công!',
-                    text: 'Sản phẩm đã được xóa thành công!',
+                    text: 'Sản phẩm đã được xóa tạm thời!',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then((result) => {
@@ -448,5 +450,35 @@ if (isset($_GET['id'])) {
         const deleteUrl = `?page=products&id=${id}`;
         document.getElementById('confirmDeleteButton').setAttribute('href', deleteUrl);
     }
+
+     // Hàm chuyển đổi chuỗi tiếng Việt có dấu thành không dấu
+     function removeAccents(str) {
+        return str.normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                  .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+
+    // Hàm chuyển đổi chuỗi thành slug
+    function convertToSlug(text) {
+        return removeAccents(text)
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Lắng nghe sự kiện thay đổi trên ô nhập tên sản phẩm
+    document.getElementById('productName').addEventListener('input', function() {
+        const productName = this.value;
+        const slug = convertToSlug(productName);
+        document.getElementById('slug').value = slug;
+    });
+
+    // Lắng nghe sự kiện thay đổi trên ô nhập tên sản phẩm trong modal chỉnh sửa
+    document.getElementById('editProductName').addEventListener('input', function() {
+        const productName = this.value;
+        const slug = convertToSlug(productName);
+        document.getElementById('editSlug').value = slug;
+    });
 
 </script>

@@ -16,6 +16,10 @@
         'confirm'=>'cart/confirm_order.php',
         'process'=>'cart/process_cart.php',
         'update'=>'cart/update_cart.php',
+        'order'=>'pages/user/order.php',
+        'orderDetail'=>'pages/user/order_detail.php',
+        'removeItem'=> 'cart/remove_item.php',
+        'clearCart'=> 'cart/clear_cart.php',
     ];
 
     $admin_route = [
@@ -26,6 +30,7 @@
         'users'=>'user/index.php',
         'orders'=>'order/index.php',
         'order_detail'=>'order/order_detail.php',
+        'product-trash'=>'product/product-trash.php'
 
     ];    
 ?>

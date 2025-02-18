@@ -85,9 +85,19 @@
                                 </div>
 
                                 <!-- Quản lý sản phẩm -->
-                                <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=products">
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#productsMenu" aria-expanded="false"
+                                    aria-controls="productsMenu">
                                     Quản lý sản phẩm
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                 </a>
+                                <div class="collapse" id="productsMenu" aria-labelledby="headingTwo"
+                                    data-bs-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=products">Danh sách sản phẩm</a>
+                                        <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=product-trash">Thùng rác sản phẩm</a>
+                                    </nav>
+                                </div>
                                 <!-- Quản lý người dùng -->
                                 <a class="nav-link" href="<?= BASE_ADMIN_URL ?>page=users">
                                     Quản lý người dùng

@@ -20,18 +20,25 @@
             <h3><?= htmlspecialchars($product['product_name']) ?></h3>
         </div>
         <div class="price">
-            <span><?= number_format($product['price'], 0, ',', '.') ?> VND</span>
+            <?php if ($product["is_on_sale"] == 1): ?>
+                <span class="default-price" style="text-decoration: line-through;"><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</span>
+                <span class="sale-price"><?= number_format($product['sale_price'], 0, ',', '.') ?> VNĐ</span>
+            <?php else: ?>
+                <span class="default-price"><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</span>
+            <?php endif; ?>
         </div>
         <div class="button-action">
             <button class="view-more">
-            <a href="<?= BASE_URL?>page=detail&slug=<?= $product['slug']?>">Chi Tiet</a>
+                <a href="<?= BASE_URL?>page=detail&slug=<?= $product['slug']?>">Chi Tiết</a>
             </button>
-            <button class="add-to-cart">Thêm vào giỏ hàng</button>
+            <button class="add-to-cart btn btn-primary">
+                    <a href="<?= BASE_URL ?>page=addToCart&id=<?= $product['id'] ?>"
+                        class="text-white text-decoration-none">Add to Cart</a>
+                </button>
         </div>
     </div>
     <?php endforeach; ?>
 </div>
-
 
 
 
@@ -47,19 +54,27 @@ $views_product = $s->getAll($query_views_product);
     <?php foreach ($views_product as $views): ?>
     <div class="product-item">
         <div class="product-img">
-            <img src="<?= htmlspecialchars($views['image']) ?>" alt="<?= htmlspecialchars($views['product_name']) ?>">
+            <img src="/NguyenAnhQuoc/asset/images/<?= htmlspecialchars($views['image']) ?>" alt="<?= htmlspecialchars($views['product_name']) ?>">
         </div>
         <div class="product-name">
             <h3><?= htmlspecialchars($views['product_name']) ?></h3>
         </div>
         <div class="price">
-            <span><?= number_format($views['price'], 0, ',', '.') ?> VND</span>
+            <?php if ($views["is_on_sale"] == 1): ?>
+                <span class="default-price" style="text-decoration: line-through;"><?= number_format($views['price'], 0, ',', '.') ?> VNĐ</span>
+                <span class="sale-price"><?= number_format($views['sale_price'], 0, ',', '.') ?> VNĐ</span>
+            <?php else: ?>
+                <span class="default-price"><?= number_format($views['price'], 0, ',', '.') ?> VNĐ</span>
+            <?php endif; ?>
         </div>
         <div class="button-action">
             <button class="view-more">
-            <a href="<?= BASE_URL?>page=detail&slug=<?= $views['slug']?>">Chi Tiet</a>
+                <a href="<?= BASE_URL?>page=detail&slug=<?= $views['slug']?>">Chi Tiết</a>
             </button>
-            <button class="add-to-cart">Thêm vào giỏ hàng</button>
+            <button class="add-to-cart btn btn-primary">
+                    <a href="<?= BASE_URL ?>page=addToCart&id=<?= $views['id'] ?>"
+                        class="text-white text-decoration-none">Add to Cart</a>
+                </button>
         </div>
     </div>
     <?php endforeach; ?>
@@ -81,7 +96,7 @@ $sales_product = $s->getAll($query_sales_product);
     <?php foreach ($sales_product as $sales): ?>
     <div class="product-item">
         <div class="product-img">
-            <img src="<?= htmlspecialchars($sales['image']) ?>" alt="<?= htmlspecialchars($sales['product_name']) ?>">
+            <img src="/NguyenAnhQuoc/asset/images/<?= htmlspecialchars($sales['image']) ?>" alt="<?= htmlspecialchars($sales['product_name']) ?>">
         </div>
         <div class="product-name">
             <h3><?= htmlspecialchars($sales['product_name']) ?></h3>
@@ -99,7 +114,10 @@ $sales_product = $s->getAll($query_sales_product);
             <button class="view-more">
             <a href="<?= BASE_URL?>page=detail&slug=<?= $sales['slug']?>">Chi Tiet</a>
             </button>
-            <button class="add-to-cart">Thêm vào giỏ hàng</button>
+            <button class="add-to-cart btn btn-primary">
+                    <a href="<?= BASE_URL ?>page=addToCart&id=<?= $sales['id'] ?>"
+                        class="text-white text-decoration-none">Add to Cart</a>
+                </button>
         </div>
     </div>
     <?php endforeach; ?>

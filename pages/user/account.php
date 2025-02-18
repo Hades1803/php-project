@@ -65,7 +65,7 @@ $result = $s->getOne($sql);
     <div class="col-md-3">
         <ul class="list-group">
             <li class="list-group-item active"><a class="btn" href="">Cập nhật tài khoản</a></li>
-            <li class="list-group-item"><a class="btn text-dark" href="">Quản lý đơn hàng</a></li>
+            <li class="list-group-item"><a class="btn text-dark" href="<?= BASE_URL?>page=order">Quản lý đơn hàng</a></li>
             <li class="list-group-item"><a class="btn text-dark" href="">Blog</a></li>
         </ul>
     </div>

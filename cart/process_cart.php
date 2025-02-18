@@ -30,9 +30,10 @@ if (isset($_POST['checkout'])) {
     $order_data = array(
         'user_id' => $user_id,
         'total_price' => $total, 
+        'status'=>'Đang Xử Lý',
         'shipping_address' => $address,
         'payment_method' => $payment_method,
-        'payment_status' => 'pending',
+        'payment_status' => 'Đang Xử Lý',
         'created_at' => date('Y-m-d H:i:s')
     );
     $s->addRecord('orders', $order_data);

@@ -11,7 +11,7 @@ $result = $s->getAll($sql);
     <?php foreach ($result as $value): ?>
         <div class="product-item">
             <div class="product-img">
-                <img src="<?= $value["image"] ?>">
+                <img src="/NguyenAnhQuoc/asset/images/<?= $value["image"] ?>">
             </div>
             <div class="product-name">
                 <h3><?= $value["product_name"] ?></h3>

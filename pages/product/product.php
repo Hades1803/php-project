@@ -9,7 +9,7 @@ foreach ($result as $value):
     ?>
     <div class="product-item">
         <div class="product-img">
-            <img src="<?= $value["image"] ?>">
+            <img src="/NguyenAnhQuoc/asset/images/<?= $value["image"] ?>">
         </div>
         <div class="product-name">
             <h3><?= $value["product_name"] ?></h3>
@@ -26,10 +26,9 @@ foreach ($result as $value):
             <button class="view-more">
                 <a href="<?= BASE_URL ?>page=detail&slug=<?= $value["slug"] ?>">Chi Tiết</a>
             </button>
-            <button class="add-to-cart">
-                    <a href="<?= BASE_URL ?>page=addToCart&id=<?= $value['id'] ?>">Add to
-                            Cart</a>
-                </button>
+            <button class="add-to-cart btn btn-primary">
+    <a href="<?= BASE_URL ?>page=addToCart&id=<?= $value['id'] ?>" class="text-white text-decoration-none">Add to Cart</a>
+</button>
         </div>
     </div>
     <?php
